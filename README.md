@@ -1,5 +1,7 @@
 # mpdshell
-A shell-like application for mpd. Let’s you control your Music Player Daemon instance with the raw protocol commands. Includes protocol autocomplete, a basic lexer, a history, and an basic batch script interpreter.
+A shell-like application for mpd. Lets you control your Music Player Daemon instance [with the raw protocol commands]. 
+
+Includes protocol autocomplete, a basic lexer, a history, and an basic batch script interpreter.
 
 ![image-20200810085052793](README.assets/image-20200810085052793.png)
 
