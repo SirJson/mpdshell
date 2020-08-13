@@ -275,7 +275,7 @@ def create_grammar():
         (?P<exec>\![a-z]+) |
         ((?P<exec>\![a-z]+)\s(?P<execparam>[a-zA-Z0-9.\/\\\-\_\s]+)\s*) |
         (?P<func>[a-z]+) |
-        ((?P<func>[a-z]+)\s(?P<params>[a-zA-Z0-9.\/\:\\\-\_\s]+)\s*)
+        ((?P<func>[a-z]+)\s(?P<params>\+?[a-zA-Z0-9.\/\:\\\-\_\s]+)\s*)
         """
     )
 
