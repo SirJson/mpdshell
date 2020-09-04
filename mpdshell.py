@@ -329,10 +329,13 @@ def main():
     parser.add_argument("host", help="The host of your MPD instance")
     parser.add_argument("-p", "--port", help="The port on which MPD is running",
                     type=int)
+    parser.add_argument("-s", "--secret", help="Initialize connection with this password",
+                    type=str)
     args = parser.parse_args()
     port = args.port if args.port is not None else 12345
     print(f"Connecting to {args.host}@{port}...")
     mpd = MPDClient(args.host, port)
+
     grammar = create_grammar()
     intro_text = f"Connected to: {mpd.server}@{mpd.port} | {mpd.initmsg}"
     help_text = "Exit: [Control-C] | Scroll up: [PageUp] | Scroll down: [PageDown]"
@@ -484,6 +487,9 @@ def main():
         enable_page_navigation_bindings=False,
         color_depth=ColorDepth.TRUE_COLOR
     )
+
+    if args.secret is not None:
+        mpd.send(f"password {args.secret}")
 
     application.run()
     autoping.stop()
