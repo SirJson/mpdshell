@@ -1,4 +1,5 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
+
 import argparse
 import asyncio
 from re import DEBUG
@@ -15,7 +16,7 @@ from typing import List
 
 from prompt_toolkit import HTML
 from prompt_toolkit import print_formatted_text as print
-from prompt_toolkit.application import Application
+from prompt_toolkit.application import Application, application
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.contrib.regular_languages.compiler import compile
 from prompt_toolkit.contrib.regular_languages.completion import \
@@ -43,6 +44,7 @@ RECV_BUFFER_SIZE = 4096
 SCRIPT_HOME = Path.home() / 'mpdscripts'
 DEBUGAPP = False
 NOECHO = False
+APP = None
 
 mpdcmds = [
     "add",
@@ -155,7 +157,8 @@ internalcmds = {
     "exec": lambda s, x: s.runscript(x),
     "scripts": lambda s, x: listscripts(s, x),
     "help": lambda s, x: apphelp(s, x),
-    "mpchelp": lambda s, x: mpchelp(s, x)
+    "mpchelp": lambda s, x: mpchelp(s, x),
+    "reset": lambda s, x: resetterm(s,x)
 }
 
 
@@ -340,6 +343,11 @@ def apphelp(mpd, _param):
     mpd.local_echo(output)
 
 
+def resetterm(mpd, _param):
+    APP.reset()
+    mpd.local_echo("Terminal reset!")
+
+
 def listscripts(mpd, _param):
     output = f'=== Available mpd shell scripts in "{SCRIPT_HOME}" ==='
     files = list(SCRIPT_HOME.glob("*.ncs"))
@@ -412,7 +420,8 @@ def get_echodbg_prefix(lineno, wrap_count):
 
 
 def main():
-    global DEBUGAPP, NOECHO
+    global DEBUGAPP, NOECHO, APP
+
     parser = argparse.ArgumentParser()
     parser.add_argument("host", help="The host of your MPD instance")
     parser.add_argument("-p", "--port", help="The port on which MPD is running (default: 6600)",
@@ -526,7 +535,6 @@ def main():
     container = FloatContainer(
         content=HSplit(
             [
-                
                 Window(
                     FormattedTextControl(
                         intro_text
@@ -694,7 +702,7 @@ def main():
                 local_output += f'\n{echomsg}\n'
             echodbg_print(
                 f"[{ datetime.now().isoformat()}] echobuffer (DRAIN): {mpd.peek_echobuffer()}")
-        
+
         ####################################
         # SECTION WRITE TO TTY
         ####################################
@@ -738,6 +746,8 @@ def main():
         enable_page_navigation_bindings=False,
         color_depth=ColorDepth.TRUE_COLOR
     )
+
+    APP = application
 
     if args.secret is not None:
         mpd.send(f"password {args.secret}")
